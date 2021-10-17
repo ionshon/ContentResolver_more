@@ -1,6 +1,5 @@
 package com.inu.contentresolver
 
-import android.app.PendingIntent.getActivity
 import android.content.res.Resources
 import android.media.MediaPlayer
 import android.net.Uri
@@ -12,12 +11,7 @@ import java.text.SimpleDateFormat
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
-import android.os.ParcelFileDescriptor
-
-
-
-
-
+import com.inu.contentresolver.beans.Music
 
 
 class MusicAdapter: // (private val onClick: (Music) -> Unit):
@@ -55,7 +49,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 mediaPlayer?.start()
             }
         }
-        fun setMusic(music:Music) {
+        fun setMusic(music: Music) {
             with(binding) {
                 imageAlbum.setImageURI(music.albumUUri)
 

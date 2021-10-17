@@ -1,4 +1,4 @@
-package com.inu.contentresolver
+package com.inu.contentresolver.beans
 
 import android.net.Uri
 import android.provider.MediaStore

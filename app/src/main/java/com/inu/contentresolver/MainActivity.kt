@@ -23,6 +23,8 @@ import android.content.ContentUris
 
 import android.content.ContentResolver
 import android.content.Context
+import com.inu.contentresolver.beans.Album
+import com.inu.contentresolver.beans.Music
 import java.io.IOException
 
 class MainActivity : BaseActivity() {
@@ -72,7 +74,7 @@ class MainActivity : BaseActivity() {
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.DURATION
+            MediaStore.Audio.Media.DURATION,
         )
         //3.  컨텐트 리졸버에 해당 데이터 요청
         val cursor = contentResolver.query(musicListUri, proj, null, null, null)
@@ -114,42 +116,38 @@ class MainActivity : BaseActivity() {
             MediaStore.Audio.Albums.ARTIST,
             MediaStore.Audio.Albums.ALBUM,
             MediaStore.Audio.Albums.ALBUM_ART,
-
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ALBUM_ID, // 추가
-            MediaStore.Audio.Media.DURATION
         )
 
         val cur = contentResolver.query(
             MediaStore.Audio.Albums.EXTERNAL_CONTENT_URI,
             cols, null, null, null
         )
+        val albumList = mutableListOf<Album>()
+
         if (cur?.moveToFirst() == true) {
-            var ablum: String
-            var artist: String
             var id: String
-            var albumArt: String
-            var idNum: Int
-
             var title: String
-            var albumId: String  // 추가
-            var duration: Long
-
-            val artistColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
-            val ablumColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
-            val albumArtColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
+            var artist: String
+            var albumArt2: String
+            var idNum: Int
+            val titleColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
+            val artistColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
+            val albumArt2Column: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
            // val titleColumn: Int = cur.getColumnIndex((MediaStore.Audio.Albums))
             var imagePath: String
             do {
                 // Get the field values
                 idNum = cur.getInt(0) // 레코드의 _id를 가져옵니다.
                 id = idNum.toString()
-                artist = cur.getString(artistColumn) // title 필드의 값을 가져옴
-                ablum = cur.getString(ablumColumn) // artist 필드의 값을 가져옴
-                albumArt = cur.getString(albumArtColumn)
-                val album_art: Bitmap? = getBitmapImage(idNum, 200, 200)
-                albumarts.add(album_art!!) // 두개 합쳐서  array list 에 넣어줌.
-                albumInfo.add("$ablum - $artist")
+                title = cur.getString(titleColumn) // title 필드의 값을 가져옴
+                artist = cur.getString(artistColumn) // artist 필드의 값을 가져옴
+                albumArt2 = cur.getString(albumArt2Column)
+                val albumArtBit: Bitmap? = getBitmapImage(idNum, 200, 200)
+                albumarts.add(albumArtBit!!) // 두개 합쳐서  array list 에 넣어줌.
+                albumInfo.add("$title - $artist")
+
+                val albumBean = Album(id, title, artist, albumArtBit)
+                albumList.add(albumBean)
             } while (cur.moveToNext())
         }
     }
