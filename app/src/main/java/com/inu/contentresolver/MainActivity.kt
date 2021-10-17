@@ -45,7 +45,7 @@ class MainActivity : BaseActivity() {
     private val sBitmapOptionsCache = BitmapFactory.Options()
     private val sArtworkUri = Uri.parse("content://media/external/audio/albumart")
     var mContext: Context? = null
-
+    var i = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -54,6 +54,7 @@ class MainActivity : BaseActivity() {
 
         if(isPermitted()) {
             startProcess()
+            setTitle("곡수 : $i")
         }else {
             ActivityCompat.requestPermissions(this, arrayOf(permission), FLAG_REQ_STORAGE)
         }
@@ -97,10 +98,10 @@ class MainActivity : BaseActivity() {
         val cursor = contentResolver.query(musicListUri, proj, null, null, null)
         // 4. 커서로 전달받은 데이터를 꺼내서 저장
         val musicList = mutableListOf<Music>()
-        var i=0
 
         val defaultUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/resource01")
         while (cursor?.moveToNext() == true) {
+
             val id = cursor.getString(0)
             val title = cursor.getString(1)
             val artist = cursor.getString(2)
@@ -110,6 +111,12 @@ class MainActivity : BaseActivity() {
      //       val path = cursor.getString(5)
             val path = cursor.getString(cursor.getColumnIndex("_data"))
         //    Log.d("패스 로그:", "$path")
+
+            if (duration > 100000) {
+                i+=1
+                val music = Music(id, title, artist, albumId, duration, path) //, albumArtBit)
+                musicList.add(music)
+            }
 /*
             var bitmap: Bitmap? = null
             try {
@@ -138,8 +145,6 @@ class MainActivity : BaseActivity() {
 
             //  val bitmap = BitmapFactory.decodeFileDescriptor(fd?.fileDescriptor, null, null)
 
-            val music = Music(id, title, artist, albumId, duration, path) //, albumArtBit)
-            musicList.add(music)
         }
         return  musicList
     }

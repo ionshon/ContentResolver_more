@@ -15,6 +15,7 @@ import android.graphics.BitmapFactory.*
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
 import com.inu.contentresolver.utils.Utils
@@ -99,8 +100,6 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 e.printStackTrace()
             } */
 
-
-
             CoroutineScope(Dispatchers.Main).launch {
                 val bitmap = withContext(Dispatchers.IO){
                     bitmapLoader(music.getAlbumUri())
@@ -117,6 +116,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                     val sdf = SimpleDateFormat("mm:ss")
                     textDuration.text = sdf.format(music.duration)
                 }
+                Log.d("duration 길이:", "${music.duration}")
             }
             this.musicUri = music.getMusicUri()
         }
@@ -132,7 +132,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                     return MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver, musicUri)
                 }
             } catch (e: IOException) {
-                //  Log.d("무존재 : ", "${music.path}")
+               // Log.d("무존재 : ", "${music.path}")
                 return MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver,uriLocal)
             }
         }
