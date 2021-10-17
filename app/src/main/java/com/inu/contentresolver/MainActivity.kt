@@ -2,6 +2,7 @@ package com.inu.contentresolver
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
@@ -10,6 +11,14 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.inu.contentresolver.databinding.ActivityMainBinding
+import android.graphics.BitmapFactory
+
+import android.graphics.Bitmap
+
+import android.os.ParcelFileDescriptor
+
+
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -54,13 +63,18 @@ class MainActivity : AppCompatActivity() {
         // 4. 커서로 전달받은 데이터를 꺼내서 저장
         val musicList = mutableListOf<Music>()
         while (cursor?.moveToNext() == true) {
-            val id = cursor!!.getString(0)
-            val title = cursor!!.getString(1)
-            val artist = cursor!!.getString(2)
-            val albumId = cursor!!.getString(3)
-            val duration = cursor!!.getLong(4)
+            val id = cursor.getString(0)
+            val title = cursor.getString(1)
+            val artist = cursor.getString(2)
+            val albumId = cursor!!.getString(3) //Long = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)) //cursor!!.getString(3)
+            val albumUri = Uri.parse("content://media/external/audio/albumart/$albumId")
+            val duration = cursor.getLong(4)
 
-            val music = Music(id, title, artist, albumId, duration)
+        //    val fd: ParcelFileDescriptor? = contentResolver.openFileDescriptor(albumUri, "r")
+
+          //  val bitmap = BitmapFactory.decodeFileDescriptor(fd?.fileDescriptor, null, null)
+
+            val music = Music(id, title, artist, albumId, albumUri, duration)
             musicList.add(music)
         }
         return  musicList
