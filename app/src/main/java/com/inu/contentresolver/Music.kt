@@ -14,7 +14,6 @@ class Music(id: String, title:String?, artist:String?, albumId:String?, albumUri
     var artist : String? = ""
     var albumId: String? = ""
     var albumUUri: Uri?  = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")  // 앨범이미지  id
-    //var albumUri: Uri = Uri.parse("android.resource://your.package.here/drawable/image_name")
     var duration : Long? = 0
 
     init {
