@@ -1,6 +1,7 @@
 package com.inu.contentresolver
 
 import android.content.res.Resources
+import android.database.Cursor
 import android.media.MediaPlayer
 import android.net.Uri
 import android.view.LayoutInflater
@@ -11,9 +12,22 @@ import java.text.SimpleDateFormat
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory.*
+import android.graphics.ImageDecoder
+import android.os.Build
+import android.provider.MediaStore
+import android.util.Log
+import androidx.annotation.RequiresApi
 import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
 import com.inu.contentresolver.utils.Utils
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import java.io.IOException
+import java.net.MalformedURLException
+import java.net.URL
 
 
 class MusicAdapter: // (private val onClick: (Music) -> Unit):
@@ -22,6 +36,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
     val musicList = mutableListOf<Music>()
     val albumList = mutableListOf<Album>()
     var mediaPlayer:MediaPlayer? = null
+    val uriLocal = Uri.parse("android.resource://com.inu.contentresolver/drawable/resource01")
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
        // val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
@@ -56,11 +71,50 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 mediaPlayer?.start()
             }
         }
+
         fun setMusic(music: Music) {
+            var bitmap: Bitmap? = null
+            try {
+                bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(binding.root.context.contentResolver, music.getAlbumUri()))
+                } else {
+                    //     val source = ImageDecoder.createSource(binding.root.context.contentResolver, uriLocal)
+                     //   ImageDecoder.decodeBitmap(source)
+                        MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver, music.getAlbumUri())
+                }
+            } catch (e: IOException) {
+                Log.d("무존재 : ", "${music.path}")
+                bitmap = MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver,uriLocal)
+            }
+      //      Log.d("패스 : ", "${music.path}")
+       //     Log.d("패스URI : ", "${music.getAlbumUri()}")
+
+            /*
+            try {
+                val url = URL(music.getAlbumUri().toString())
+                val stream = url.openStream()
+
+                bitmap =  decodeStream(stream)
+
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } */
+
+
+             /*
+                CoroutineScope(Dispatchers.Main).launch {
+                    val bitmap = withContext(Dispatchers.IO){
+                        ImageLoader.loadImage(music.getAlbumUri().toString())
+                    }
+                    binding.imageAlbum.setImageBitmap(bitmap)
+                } */
             with(binding) {
-                imageAlbum.setImageURI(music.albumUUri)
-              //  imageAlbum.setImageBitmap(Utils.songArt("jjj",binding.root.context))
-              //  imageAlbum.setImageBitmap(decodeSampledBitmapFromResource(imageAlbum.resources, music.id.toInt(), 250, 250));
+            //    imageAlbum.setImageURI(music.getAlbumUri())
+                imageAlbum.setImageBitmap(bitmap)
+             //     imageAlbum.setImageBitmap(Utils.songArt(music.path, binding.root.context))
+          //      imageAlbum.setImageBitmap(decodeSampledBitmapFromResource(, music.id.toInt(), 250, 250));
                 texArtist.text = music.artist
                 textTitle.text = music.title
                 val sdf = SimpleDateFormat("mm:ss")
@@ -72,7 +126,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
         fun setAlbum(album: Album) {
             with(binding) {
               //  imageAlbum.setImageURI(music.albumUUri)
-                imageAlbum.setImageBitmap(album.albumArtBit);
+                imageAlbum.setImageBitmap(album.albumArtBit)
                 texArtist.text = album.artist
                 textTitle.text = album.title
              //   val sdf = SimpleDateFormat("mm:ss")
@@ -82,26 +136,44 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
         }
     }
 
+    object ImageLoader{
+        suspend fun loadImage(imageUrl: String): Bitmap? {
+            val bmp: Bitmap? = null
+            try {
+                val url = URL(imageUrl)
+                val stream = url.openStream()
+
+                return BitmapFactory.decodeStream(stream)
+
+            } catch (e: MalformedURLException) {
+                e.printStackTrace()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            return bmp
+        }
+    }
+
     fun decodeSampledBitmapFromResource(
         res: Resources?, resId: Int,
         reqWidth: Int, reqHeight: Int
     ): Bitmap? {
 
         // First decode with inJustDecodeBounds=true to check dimensions
-        val options = BitmapFactory.Options()
+        val options = Options()
         options.inJustDecodeBounds = true
-        BitmapFactory.decodeResource(res, resId, options)
+        decodeResource(res, resId, options)
 
         // Calculate inSampleSize
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight)
 
         // Decode bitmap with inSampleSize set
         options.inJustDecodeBounds = false
-        return BitmapFactory.decodeResource(res, resId, options)
+        return decodeResource(res, resId, options)
     }
 
     fun calculateInSampleSize(
-        options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int
+        options: Options, reqWidth: Int, reqHeight: Int
     ): Int {
         // Raw height and width of image
         val height = options.outHeight

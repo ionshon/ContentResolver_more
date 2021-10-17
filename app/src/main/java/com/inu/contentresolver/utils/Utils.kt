@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit
 
 object Utils {
 
-    fun songArt(path: String, context: Context): Bitmap {
+    fun songArt(path: String?, context: Context): Bitmap? {
         val retriever = MediaMetadataRetriever()
         val inputStream: InputStream
         retriever.setDataSource(path)

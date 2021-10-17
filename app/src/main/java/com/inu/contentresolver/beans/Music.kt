@@ -3,26 +3,29 @@ package com.inu.contentresolver.beans
 import android.net.Uri
 import android.provider.MediaStore
 import android.content.ContentUris
+import android.graphics.Bitmap
 
 
-
-
-class Music(id: String, title:String?, artist:String?, albumId:String?, albumUri: Uri, duration:Long?) {
+class Music(id: String, title:String?, artist:String?, albumId:String?, duration:Long?, path: String) { //, albumArtBit: Bitmap?) {
 
     var id: String = "" // 음원 자체의 id
     var title: String? = ""
     var artist : String? = ""
     var albumId: String? = ""
-    var albumUUri: Uri?  = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")  // 앨범이미지  id
+ //   var albumUUri: Uri?  = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")  // 앨범이미지  id
     var duration : Long? = 0
+    var path : String =""
+    var albumArtBit: Bitmap?  = null // 앨범이미지  id
 
     init {
         this.id = id
         this.title = title
         this.artist = artist
         this.albumId = albumId
-        this.albumUUri = albumUri
+     //   this.albumUUri = albumUri
         this.duration = duration
+        this.path = path
+        this.albumArtBit = albumArtBit
     }
 
     fun getMusicUri(): Uri {

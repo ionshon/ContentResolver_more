@@ -1,11 +1,11 @@
 package com.inu.contentresolver
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
@@ -23,9 +23,14 @@ import android.content.ContentUris
 
 import android.content.ContentResolver
 import android.content.Context
+import android.graphics.ImageDecoder
 import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
 import java.io.IOException
+import android.os.Build
+
+
+
 
 class MainActivity : BaseActivity() {
 
@@ -65,17 +70,28 @@ class MainActivity : BaseActivity() {
     }
 
 
+    @SuppressLint("Range")
     fun getMusicList(): List<Music> {
         // 컨텐트 리졸버로 음원 목록 가져오기
         // 1. 데이터 테이블 주소
         val musicListUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         // 2. 가져올 데이터 컬컴 정의
-        val proj = arrayOf(
+        val proj2 = arrayOf(
             MediaStore.Audio.Media._ID,
             MediaStore.Audio.Media.TITLE,
             MediaStore.Audio.Media.ARTIST,
             MediaStore.Audio.Media.ALBUM_ID,
-            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DURATION
+        )
+        val proj = arrayOf(
+            MediaStore.Audio.AudioColumns._ID, // 6
+            MediaStore.Audio.AudioColumns.TITLE, // 0
+            MediaStore.Audio.AudioColumns.ARTIST,// 7
+            MediaStore.Audio.AudioColumns.ALBUM_ID, // 5
+            MediaStore.Audio.AudioColumns.DURATION, // 3
+            MediaStore.Audio.AudioColumns.DATA, // 4
+            MediaStore.Audio.AudioColumns.TRACK, // 1
+            MediaStore.Audio.AudioColumns.YEAR, // 2
         )
         //3.  컨텐트 리졸버에 해당 데이터 요청
         val cursor = contentResolver.query(musicListUri, proj, null, null, null)
@@ -83,29 +99,46 @@ class MainActivity : BaseActivity() {
         val musicList = mutableListOf<Music>()
         var i=0
 
+        val defaultUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/resource01")
         while (cursor?.moveToNext() == true) {
             val id = cursor.getString(0)
             val title = cursor.getString(1)
             val artist = cursor.getString(2)
             val albumId = cursor.getString(3) //Long = cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID)) //cursor!!.getString(3)
-            var albumUri = Uri.parse("content://media/external/audio/albumart/$albumId")
+         //   var albumUri = Uri.parse("content://media/external/audio/albumart/$albumId")
             val duration = cursor.getLong(4)
+     //       val path = cursor.getString(5)
+            val path = cursor.getString(cursor.getColumnIndex("_data"))
+        //    Log.d("패스 로그:", "$path")
+/*
+            var bitmap: Bitmap? = null
+            try {
+                bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(contentResolver, albumUri))
+                } else {
+                    MediaStore.Images.Media.getBitmap(contentResolver, albumUri)
+                }
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
+            val idnum = cursor.getInt(0)
+            val albumArtBit: Bitmap? = getBitmapImage(idnum, 200, 200)
+            val defaultUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/resource01")
+*/
 
-          //  val defaultUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")
-
-
+/*
             try {
                var fd =  contentResolver.openFileDescriptor(albumUri, "r")
             } catch (e : Exception) {
                 i+=1
                 var albumUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")
                 Log.d("예외", "something error!! $i")
-            }
+            } */
             // var fd: ParcelFileDescriptor?  = contentResolver.openFileDescriptor(albumUri, "r") ?: contentResolver.openFileDescriptor(defaultUri, "r")
 
             //  val bitmap = BitmapFactory.decodeFileDescriptor(fd?.fileDescriptor, null, null)
 
-            val music = Music(id, title, artist, albumId, albumUri, duration)
+            val music = Music(id, title, artist, albumId, duration, path) //, albumArtBit)
             musicList.add(music)
         }
         return  musicList
@@ -133,8 +166,7 @@ class MainActivity : BaseActivity() {
             var idNum: Int
             val titleColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
             val artistColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
-     //       val albumArt2Column: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
-           // val titleColumn: Int = cur.getColumnIndex((MediaStore.Audio.Albums))
+            val albumArt2Column: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
             var imagePath: String
             do {
                 // Get the field values
@@ -142,8 +174,8 @@ class MainActivity : BaseActivity() {
                 id = idNum.toString()
                 title = cur.getString(titleColumn) // title 필드의 값을 가져옴
                 artist = cur.getString(artistColumn) // artist 필드의 값을 가져옴
-       //         albumArt2 = cur.getString(albumArt2Column)
-                val albumArtBit: Bitmap? = getBitmapImage(idNum, 200, 200)
+                albumArt2 = cur.getString(albumArt2Column)
+                val albumArtBit: Bitmap? = getBitmapImage(idNum, 10, 10)
                 albumarts.add(albumArtBit!!) // 두개 합쳐서  array list 에 넣어줌.
                 albumInfo.add("$title - $artist")
 
