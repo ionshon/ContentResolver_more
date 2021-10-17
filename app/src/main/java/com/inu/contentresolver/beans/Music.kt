@@ -15,7 +15,7 @@ class Music(id: String, title:String?, artist:String?, albumId:String?, duration
  //   var albumUUri: Uri?  = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")  // 앨범이미지  id
     var duration : Long? = 0
     var path : String =""
-    var albumArtBit: Bitmap?  = null // 앨범이미지  id
+ //   var albumArtBit: Bitmap?  = null // 앨범이미지  id
 
     init {
         this.id = id
@@ -25,7 +25,7 @@ class Music(id: String, title:String?, artist:String?, albumId:String?, duration
      //   this.albumUUri = albumUri
         this.duration = duration
         this.path = path
-        this.albumArtBit = albumArtBit
+    //    this.albumArtBit = albumArtBit
     }
 
     fun getMusicUri(): Uri {
