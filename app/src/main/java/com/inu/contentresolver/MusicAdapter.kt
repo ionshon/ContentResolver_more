@@ -11,13 +11,16 @@ import java.text.SimpleDateFormat
 import android.graphics.BitmapFactory
 
 import android.graphics.Bitmap
+import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
+import com.inu.contentresolver.utils.Utils
 
 
 class MusicAdapter: // (private val onClick: (Music) -> Unit):
     RecyclerView.Adapter<MusicAdapter.Holder>() {
 
     val musicList = mutableListOf<Music>()
+    val albumList = mutableListOf<Album>()
     var mediaPlayer:MediaPlayer? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
@@ -29,10 +32,14 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val music = musicList[position]
         holder.setMusic(music)
+
+      //  val album = albumList[position]
+      //  holder.setAlbum(album)
     }
 
     override fun getItemCount(): Int {
         return musicList.size
+      //  return albumList.size
     }
 
     inner class Holder(val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
@@ -52,7 +59,7 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
         fun setMusic(music: Music) {
             with(binding) {
                 imageAlbum.setImageURI(music.albumUUri)
-
+              //  imageAlbum.setImageBitmap(Utils.songArt("jjj",binding.root.context))
               //  imageAlbum.setImageBitmap(decodeSampledBitmapFromResource(imageAlbum.resources, music.id.toInt(), 250, 250));
                 texArtist.text = music.artist
                 textTitle.text = music.title
@@ -60,7 +67,18 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 textDuration.text = sdf.format(music.duration)
             }
             this.musicUri = music.getMusicUri()
+        }
 
+        fun setAlbum(album: Album) {
+            with(binding) {
+              //  imageAlbum.setImageURI(music.albumUUri)
+                imageAlbum.setImageBitmap(album.albumArtBit);
+                texArtist.text = album.artist
+                textTitle.text = album.title
+             //   val sdf = SimpleDateFormat("mm:ss")
+              //  textDuration.text = sdf.format(album.duration)
+            }
+            this.musicUri = album.getMusicUri()
         }
     }
 

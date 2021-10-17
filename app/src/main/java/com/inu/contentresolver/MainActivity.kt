@@ -58,6 +58,7 @@ class MainActivity : BaseActivity() {
     fun startProcess() {
         val adapter = MusicAdapter()
         adapter.musicList.addAll(getMusicList())
+     //   adapter.albumList.addAll(getAlbumLIst())
 
         binding.recyclerView.adapter = adapter
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
@@ -110,7 +111,7 @@ class MainActivity : BaseActivity() {
         return  musicList
     }
 
-    fun getMusicLIst2() {
+    fun getAlbumLIst(): List<Album>  {
         val cols = arrayOf(
             MediaStore.Audio.Albums._ID,
             MediaStore.Audio.Albums.ARTIST,
@@ -132,7 +133,7 @@ class MainActivity : BaseActivity() {
             var idNum: Int
             val titleColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ARTIST)
             val artistColumn: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM)
-            val albumArt2Column: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
+     //       val albumArt2Column: Int = cur.getColumnIndex(MediaStore.Audio.Albums.ALBUM_ART)
            // val titleColumn: Int = cur.getColumnIndex((MediaStore.Audio.Albums))
             var imagePath: String
             do {
@@ -141,7 +142,7 @@ class MainActivity : BaseActivity() {
                 id = idNum.toString()
                 title = cur.getString(titleColumn) // title 필드의 값을 가져옴
                 artist = cur.getString(artistColumn) // artist 필드의 값을 가져옴
-                albumArt2 = cur.getString(albumArt2Column)
+       //         albumArt2 = cur.getString(albumArt2Column)
                 val albumArtBit: Bitmap? = getBitmapImage(idNum, 200, 200)
                 albumarts.add(albumArtBit!!) // 두개 합쳐서  array list 에 넣어줌.
                 albumInfo.add("$title - $artist")
@@ -150,7 +151,10 @@ class MainActivity : BaseActivity() {
                 albumList.add(albumBean)
             } while (cur.moveToNext())
         }
+
+        return  albumList
     }
+
     fun getBitmapImage(id: Int, w: Int, h: Int): Bitmap? {
         val res: ContentResolver = contentResolver // mContext!!.getContentResolver()
         val uri = ContentUris.withAppendedId(sArtworkUri, id.toLong())
