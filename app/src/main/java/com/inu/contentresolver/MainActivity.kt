@@ -101,7 +101,6 @@ class MainActivity : BaseActivity() {
 
         val defaultUri = Uri.parse("android.resource://com.inu.contentresolver/drawable/resource01")
         while (cursor?.moveToNext() == true) {
-
             val id = cursor.getString(0)
             val title = cursor.getString(1)
             val artist = cursor.getString(2)
@@ -111,8 +110,7 @@ class MainActivity : BaseActivity() {
      //       val path = cursor.getString(5)
             val path = cursor.getString(cursor.getColumnIndex("_data"))
         //    Log.d("패스 로그:", "$path")
-
-            if (duration > 100000) {
+            if (duration > 100000) {  // 약 1분 이하 곡 제외
                 i+=1
                 val music = Music(id, title, artist, albumId, duration, path) //, albumArtBit)
                 musicList.add(music)
@@ -147,6 +145,7 @@ class MainActivity : BaseActivity() {
 
         }
         return  musicList
+        cursor?.close()
     }
 
     fun getAlbumLIst(): List<Album>  {
