@@ -1,4 +1,4 @@
-package com.inu.contentresolver
+package com.inu.contentresolver.adapter
 
 import android.R
 import android.content.res.Resources
@@ -16,9 +16,15 @@ import android.graphics.BitmapFactory.*
 import android.graphics.ImageDecoder
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
+import android.view.View
+import androidx.constraintlayout.widget.ConstraintLayout
+import com.bumptech.glide.Glide
+import com.inu.contentresolver.activity.MainActivity
 import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
 import com.inu.contentresolver.player.Player
+import com.inu.contentresolver.R.drawable
 
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -38,7 +44,10 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
     var player: Player? = null
     val uriLocal = Uri.parse("android.resource://com.inu.contentresolver/drawable/mp3logo")
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder {
+    private var onSongClicked: SongClicked? = null
+
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): Holder  {
        // val view = LayoutInflater.from(parent.context).inflate(R.layout.item_layout, parent, false)
         val binding = ItemLayoutBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return Holder(binding)
@@ -47,10 +56,10 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
     override fun onBindViewHolder(holder: Holder, position: Int) {
         val music = musicList[position]
         holder.setMusic(music)
+    }
 
-      //  val album = albumList[position]
-      //  holder.setAlbum(album)
-
+    interface SongClicked {
+        fun onSongClicked(song: Music)
     }
 
     override fun getItemCount(): Int {
@@ -58,13 +67,30 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
       //  return albumList.size
     }
 
+    private val listener = View.OnClickListener {
+        Log.d("클릭: ", "리스너")
+        onSongClicked?.onSongClicked(musicList[1])
+        //     intent.putExtra("position", position)
+        //    context.startActivity(intent)
+    }
+
     inner class Holder(val binding: ItemLayoutBinding) : RecyclerView.ViewHolder(binding.root) {
-
+    //    var cardView: CardView? = null
         var musicUri: Uri? = null
-
+      //  var musicBean: Music? = null
+        val mainItem : Unit = binding.itemMain.setOnClickListener(listener)
+/*
+        binding.root.setOnClickListener {
+            Log.d("클릭:", "adapter")
+            onSongClicked?.onSongClicked(music)
+        } */
+/*
         init {
             //    player?.musicPlayer(musicUri, binding.root.context)
             binding.root.setOnClickListener {
+                Log.d("클릭:", "adapter Holder")
+           //     onSongClicked?.onSongClicked(musicBean!!)
+
                 if(mediaPlayer != null) {
                     mediaPlayer?.release()
                     mediaPlayer = null
@@ -72,25 +98,9 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 mediaPlayer = MediaPlayer.create(binding.root.context, musicUri)
                 mediaPlayer?.start()
             }
-        }
+        } */
 
         fun setMusic(music: Music) {
-        /*    var bitmap: Bitmap? = null
-            try {
-                bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    ImageDecoder.decodeBitmap(ImageDecoder.createSource(binding.root.context.contentResolver, music.getAlbumUri()))
-                } else {
-                    //     val source = ImageDecoder.createSource(binding.root.context.contentResolver, uriLocal)
-                     //   ImageDecoder.decodeBitmap(source)
-                        MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver, music.getAlbumUri())
-                }
-            } catch (e: IOException) {
-              //  Log.d("무존재 : ", "${music.path}")
-                bitmap = MediaStore.Images.Media.getBitmap(binding.root.context.contentResolver,uriLocal)
-            } */
-      //      Log.d("패스 : ", "${music.path}")
-       //     Log.d("패스URI : ", "${music.getAlbumUri()}")
-
             /*
             try {
                 val url = URL(music.getAlbumUri().toString())
@@ -102,21 +112,16 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                 e.printStackTrace()
             } catch (e: IOException) {
                 e.printStackTrace()
-            } */
-
+            }
+            // 코루틴 구현
             CoroutineScope(Dispatchers.Main).launch {
                 val bitmap = withContext(Dispatchers.IO){
                     bitmapLoader(music.getAlbumUri())  // 원본
                 }
-
+            binding.imageAlbum.setImageBitmap(bitmap) // 원본
+*/
+//                1. 로드할 대상 Uri    2. 입력될 이미지뷰
                 with(binding) {
-                    imageAlbum.setImageBitmap(bitmap) // 원본
-                    /*
-                    Glide.with(holder.itemView.context)
-                        .load(music.getMusicUri())
-                        .into(holder.ivMovie) */
-                //    imageAlbum.setImageURI(music.getAlbumUri())
-                  //  imageAlbum.setImageBitmap(bitmap)
                  //     imageAlbum.setImageBitmap(Utils.songArt(music.path, binding.root.context))
               //      imageAlbum.setImageBitmap(decodeSampledBitmapFromResource(, music.id.toInt(), 250, 250));
                     textTitle.text = music.title
@@ -124,8 +129,13 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
                     val sdf = SimpleDateFormat("mm:ss")
                     textDuration.text = sdf.format(music.duration)
                 }
+
+                Glide.with(binding.root.context)
+                    .load(music.getAlbumUri())
+                //    .placeholder(R.drawable.ic_menu_close_clear_cancel).into(binding.imageAlbum)
+                    .placeholder(com.inu.contentresolver.R.drawable.outline_music_note_24).into(binding.imageAlbum)
           //      Log.d("duration 길이:", "${music.duration}")
-            }
+          //  } // 코루틴 마지막 줄
             this.musicUri = music.getMusicUri()
         }
 
@@ -133,23 +143,22 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
             var bitmap: Bitmap? = null
             try {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    return ImageDecoder.decodeBitmap(ImageDecoder.createSource(binding.root.context.contentResolver, musicUri))
+                    return ImageDecoder.decodeBitmap(ImageDecoder.createSource(
+                        binding.root.context.contentResolver, musicUri))
                 } else {
                     //     val source = ImageDecoder.createSource(binding.root.context.contentResolver, uriLocal)
                     //   ImageDecoder.decodeBitmap(source)
                     return MediaStore.Images.Media.getBitmap(
-                        binding.root.context.contentResolver,
-                        musicUri
-                    )
+                        binding.root.context.contentResolver, musicUri)
                 }
             } catch (e: IOException) {
                 // Log.d("무존재 : ", "${music.path}")
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                    return ImageDecoder.decodeBitmap(ImageDecoder.createSource(binding.root.context.contentResolver,uriLocal))
+                    return ImageDecoder.decodeBitmap(ImageDecoder.createSource(
+                        binding.root.context.contentResolver, uriLocal))
                 } else {
                     return MediaStore.Images.Media.getBitmap(
-                        binding.root.context.contentResolver,
-                        uriLocal
+                        binding.root.context.contentResolver, uriLocal
                     )
                 }
             }
@@ -167,7 +176,6 @@ class MusicAdapter: // (private val onClick: (Music) -> Unit):
             this.musicUri = album.getMusicUri()
         }
     }
-
 
     object ImageLoader{
         suspend fun loadImage(imageUrl: String): Bitmap? {

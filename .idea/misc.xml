@@ -7,14 +7,18 @@
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver/app/src/main/res/layout/item_layer.xml" value="0.33" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver/app/src/main/res/layout/item_layout.xml" value="0.33" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable-v24/outline_forward_24.xml" value="0.1375" />
+        <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable-v24/outline_music_note_24.xml" value="0.121875" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable-v24/outline_play_circle_24.xml" value="0.1375" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable-v24/outline_skip_next_24.xml" value="0.1375" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable-v24/outline_skip_previous_24.xml" value="0.1375" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/drawable/outline_album_24.xml" value="0.11197916666666667" />
-        <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/activity_main.xml" value="0.1" />
+        <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/activity_main.xml" value="0.18" />
+        <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/activity_player.xml" value="0.11197916666666667" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/control.xml" value="0.22" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/controls.xml" value="0.12135416666666667" />
         <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/item_layout.xml" value="0.1" />
+        <entry key="..\:/study/AndroidStudioProjects/ContentResolver_more/app/src/main/res/layout/item_player_layout.xml" value="0.33" />
+        <entry key="..\:/study/sdk/platforms/android-31/data/res/layout/activity_list_item.xml" value="0.115625" />
       </map>
     </option>
   </component>

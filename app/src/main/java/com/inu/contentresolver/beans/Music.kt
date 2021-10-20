@@ -6,7 +6,7 @@ import android.content.ContentUris
 import android.graphics.Bitmap
 
 
-class Music(id: String, title:String?, artist:String?, albumId:String?, duration:Long?, path: String) { //, albumArtBit: Bitmap?) {
+class Music(id: String, title:String?, artist:String?, albumId:String?, duration:Long?) { // path: String albumArtBit: Bitmap?) {
 
     var id: String = "" // 음원 자체의 id
     var title: String? = ""
@@ -14,7 +14,7 @@ class Music(id: String, title:String?, artist:String?, albumId:String?, duration
     var albumId: String? = ""
  //   var albumUUri: Uri?  = Uri.parse("android.resource://com.inu.contentresolver/drawable/next_thin")  // 앨범이미지  id
     var duration : Long? = 0
-    var path : String =""
+ //   var path : String =""
  //   var albumArtBit: Bitmap?  = null // 앨범이미지  id
 
     init {
@@ -24,7 +24,7 @@ class Music(id: String, title:String?, artist:String?, albumId:String?, duration
         this.albumId = albumId
      //   this.albumUUri = albumUri
         this.duration = duration
-        this.path = path
+  //      this.path = path
     //    this.albumArtBit = albumArtBit
     }
 

@@ -1,4 +1,4 @@
-package com.example.contentresolver
+package com.inu.contentresolver.activity
 
 import android.content.pm.PackageManager
 import android.os.Build

@@ -1,7 +1,7 @@
-package com.inu.contentresolver
+package com.inu.contentresolver.activity
 
 import android.Manifest
-import android.annotation.SuppressLint
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -10,7 +10,6 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.contentresolver.BaseActivity
 import com.inu.contentresolver.databinding.ActivityMainBinding
 import java.io.FileNotFoundException
 import java.lang.Exception
@@ -19,20 +18,18 @@ import android.graphics.BitmapFactory
 
 import android.os.ParcelFileDescriptor
 
-import android.content.ContentUris
-
-import android.content.ContentResolver
-import android.content.Context
-import android.graphics.ImageDecoder
 import com.inu.contentresolver.beans.Album
 import com.inu.contentresolver.beans.Music
 import java.io.IOException
-import android.os.Build
+import android.os.IBinder
+import android.util.Log
+import android.view.View
+import com.inu.contentresolver.R
+import com.inu.contentresolver.adapter.MusicAdapter
+import com.inu.contentresolver.player.MusicService
 
 
-
-
-class MainActivity : BaseActivity() {
+class MainActivity : BaseActivity(), View.OnClickListener, MusicAdapter.SongClicked {
 
 //    val permission = arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE)
 
@@ -58,7 +55,26 @@ class MainActivity : BaseActivity() {
         }else {
             ActivityCompat.requestPermissions(this, arrayOf(permission), FLAG_REQ_STORAGE)
         }
+    }
 
+    override fun onSongClicked(music: Music) {
+        // onSongSelected(music, deviceSongs!!)
+        Log.d("클릭:", "${music}")
+    }
+
+    override fun onClick(v: View) {
+        when (v.id) {
+            R.id.btnPlay -> {
+              //  resumeOrPause()
+
+            }
+            R.id.btnNext -> {
+         //       skipNext()
+            }
+            R.id.btnRew -> {
+        //        skipPrev()
+            }
+        }
     }
 
     fun startProcess() {
@@ -70,8 +86,24 @@ class MainActivity : BaseActivity() {
         binding.recyclerView.layoutManager = LinearLayoutManager(this)
     }
 
+    var myService: MusicService? = null
+    var isService = false
+    val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, iBinder: IBinder?) {
+            isService = true
+            val binder = iBinder as MusicService.MyBinder
+            myService = binder.instance
+        }
 
-    @SuppressLint("Range")
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isService = false
+        }
+    }
+
+    fun serviceBind(view: View) {
+        bindService(intent, connection, Context.BIND_AUTO_CREATE)
+    }
+
     fun getMusicList(): List<Music> {
         // 컨텐트 리졸버로 음원 목록 가져오기
         // 1. 데이터 테이블 주소
@@ -95,6 +127,9 @@ class MainActivity : BaseActivity() {
             MediaStore.Audio.AudioColumns.YEAR, // 2
         )
         //3.  컨텐트 리졸버에 해당 데이터 요청
+        val sortOrderDesc = "${MediaStore.Images.Media.DATE_TAKEN} DESC"
+        val sortOrderAsc = "${MediaStore.Images.Media.DATE_TAKEN} ASC"
+        val artistOrder = "MediaStore.Audio.Artists.DEFAULT_SORT_ORDER"
         val cursor = contentResolver.query(musicListUri, proj, null, null, null)
         // 4. 커서로 전달받은 데이터를 꺼내서 저장
         val musicList = mutableListOf<Music>()
@@ -108,11 +143,11 @@ class MainActivity : BaseActivity() {
          //   var albumUri = Uri.parse("content://media/external/audio/albumart/$albumId")
             val duration = cursor.getLong(4)
      //       val path = cursor.getString(5)
-            val path = cursor.getString(cursor.getColumnIndex("_data"))
+     //       val path = cursor.getString(cursor.getColumnIndex("_data"))
         //    Log.d("패스 로그:", "$path")
             if (duration > 100000) {  // 약 1분 이하 곡 제외
                 i+=1
-                val music = Music(id, title, artist, albumId, duration, path) //, albumArtBit)
+                val music = Music(id, title, artist, albumId, duration) //,, path, albumArtBit)
                 musicList.add(music)
             }
 /*
